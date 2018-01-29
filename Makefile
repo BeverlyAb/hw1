@@ -1,4 +1,4 @@
-CC = g++
+CC = gcc-7 -fopenmp
 CFLAGS =
 COPTFLAGS = -O3 -g
 LDFLAGS =

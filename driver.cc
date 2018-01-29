@@ -64,7 +64,7 @@ main (int argc, char* argv[])
   /* Sort in parallel, calling YOUR routine. */
   keytype* A_par = newCopy (N, A_in);
   stopwatch_start (timer);
-  parallelSort (N, A_par);
+  parallelSort (A_par, 0, N -1);
   long double t_qs = stopwatch_stop (timer);
   printf ("Parallel sort: %Lg seconds ==> %Lg million keys per second\n",
 	  t_qs, 1e-6 * N / t_qs);
