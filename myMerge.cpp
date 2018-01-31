@@ -24,13 +24,15 @@ newCopy (int N, const keytype* A)
   return A_copy;
 }
 
-//book
-int binarySearch(keytype x, keytype* T, int p, int r)
+/*  returns start if T is empty or if x <= T[start] or
+    returns mid if x > T[mid -1]
+*/
+int binarySearch(keytype x, keytype* T, int start, int end)
 {
-  int low = p;
-  int high = p;
-  if(p < r + 1)
-    high = r + 1;
+  int low = start;
+  int high = start;
+  if(start < end + 1)
+    high = end + 1;
 
   int mid = 0;
   while(low < high){
@@ -41,9 +43,13 @@ int binarySearch(keytype x, keytype* T, int p, int r)
       low = mid + 1;
   }
   return high;
-}
- //new
-void merge(keytype* T, int lower1, int upper1, int lower2, int upper2, keytype* A, int lowerOutput)
+}//binarySearch
+
+/*  merges subarrays of T to form A;
+    calls binarySearch
+*/
+void merge( keytype* T, int lower1, int upper1, int lower2, int upper2,
+            keytype* A, int lowerOutput)
 {
   int n1 = upper1 - lower1 + 1;
   int n2 = upper2 - lower2 + 1;
@@ -71,8 +77,11 @@ void merge(keytype* T, int lower1, int upper1, int lower2, int upper2, keytype* 
     merge(T, lower1, mid1 - 1, lower2, split2 - 1 , A, lowerOutput);
     merge(T, mid1 + 1, upper1, split2, upper2, A, indx_Divide + 1);
   }
-}
+}//merge
 
+/*  recursively sorts A in order to output an ordered B
+    calls merge
+*/
 void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
 {
   int n = end - start + 1;
@@ -89,7 +98,7 @@ void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
     parallelSort(A, mid + 1, end, T, notQ + 1);
     merge(T, 1, notQ, notQ + 1, n, B, startOutput);
   }
-}
+}//parallelSort
 
 void assertIsSorted (int N, const keytype* A)
 {
