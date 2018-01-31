@@ -3,7 +3,7 @@
  *
  *  \brief Implement your parallel mergesort in this file.
  */
-
+#include <omp.h>
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -67,13 +67,19 @@ void parallelSort (keytype *A,int l, int r)
 {
 	if (l < r)
 	{
-		// Same as (l+r)/2, but avoids overflow for
-		// large l and h
 		int m = l+(r-l)/2;
-
-		// Sort first and second halves
-		parallelSort(A, l, m);
-		parallelSort(A, m+1, r);
+		#pragma omp parallel
+		{
+			#pragma omp single
+			{
+				#pragma omp task
+				{
+					parallelSort(A, l, m);
+					parallelSort(A, m+1, r);
+				}
+			}
+			#pragma omp taskwait
+		}
 		merge(A, l, m, r);
 	}
 }

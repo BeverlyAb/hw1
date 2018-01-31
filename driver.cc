@@ -17,7 +17,7 @@
  *  - outputs the execution times and effective sorting rate (i.e.,
  *    keys per second).
  */
-
+//#include <omp.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -64,6 +64,7 @@ main (int argc, char* argv[])
   /* Sort in parallel, calling YOUR routine. */
   keytype* A_par = newCopy (N, A_in);
   stopwatch_start (timer);
+
   parallelSort (A_par, 0, N -1);
   long double t_qs = stopwatch_stop (timer);
   printf ("Parallel sort: %Lg seconds ==> %Lg million keys per second\n",

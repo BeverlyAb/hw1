@@ -1,4 +1,4 @@
-CC = gcc-7 -fopenmp
+CC = gcc-7 -fopenmp -lc++
 CFLAGS =
 COPTFLAGS = -O3 -g
 LDFLAGS =
