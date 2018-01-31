@@ -1,4 +1,4 @@
-CC = gcc-7 -fopenmp -lc++
+CC = g++ -fopenmp
 CFLAGS =
 COPTFLAGS = -O3 -g
 LDFLAGS =
@@ -21,6 +21,16 @@ mergesort-omp: driver.o sort.o parallel-mergesort.o
 	$(CC) $(CFLAGS) $(COPTFLAGS) -o $@ -c $<
 
 clean:
-	rm -f core *.o *~ mergesort-omp
+	rm -f core *.o *~ mergesort-omp 
 
+cleanA:
+	rm core* mergesort.e*
+
+run:
+	make clean
+	make mergesort-omp
+	qsub ./mergesort.sh
+
+show:
+	cat mergesort.o*
 # eof
