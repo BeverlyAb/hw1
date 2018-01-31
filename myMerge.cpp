@@ -79,8 +79,7 @@ void merge( keytype* T, int lower1, int upper1, int lower2, int upper2,
   }
 }//merge
 
-/*  recursively sorts A in order to output an ordered B
-    calls merge
+/*  recursively orders A; calls merge
 */
 void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
 {
@@ -98,6 +97,7 @@ void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
     parallelSort(A, mid + 1, end, T, notQ + 1);
     merge(T, 1, notQ, notQ + 1, n, B, startOutput);
   }
+  A = B;
 }//parallelSort
 
 void assertIsSorted (int N, const keytype* A)
@@ -142,5 +142,5 @@ int main()
   printf ("\nN == %d\n\n", SIZE);
 
   parallelSort(A_in, 0, SIZE , B, 0 );
-  assertIsSorted(SIZE, B);
+  assertIsSorted(SIZE, A_in);
 }

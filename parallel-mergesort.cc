@@ -10,78 +10,79 @@
 
 #include "sort.hh"
 
-void merge(keytype* arr, int l, int m, int r)
+/*  returns start if T is empty or if x <= T[start] or
+    returns mid if x > T[mid -1]
+*/
+int binarySearch(keytype x, keytype* T, int start, int end)
 {
-	int i, j, k;
-	int n1 = m - l + 1;
-	int n2 = r - m;
+  int low = start;
+  int high = start;
+  if(start < end + 1)
+    high = end + 1;
 
-	/* create temp arrays */
-	int L[n1], R[n2];
+  int mid = 0;
+  while(low < high){
+    mid = (low + high) / 2;
+    if(x <= T[mid])
+      high = mid;
+    else
+      low = mid + 1;
+  }
+  return high;
+}//binarySearch
 
-	/* Copy data to temp arrays L[] and R[] */
-	for (i = 0; i < n1; i++)
-		L[i] = arr[l + i];
-	for (j = 0; j < n2; j++)
-		R[j] = arr[m + 1+ j];
-
-	/* Merge the temp arrays back into arr[l..r]*/
-	i = 0; // Initial index of first subarray
-	j = 0; // Initial index of second subarray
-	k = l; // Initial index of merged subarray
-	while (i < n1 && j < n2)
-	{
-		if (L[i] <= R[j])
-		{
-			arr[k] = L[i];
-			i++;
-		}
-		else
-		{
-			arr[k] = R[j];
-			j++;
-		}
-		k++;
-	}
-
-	/* Copy the remaining elements of L[], if there
-	are any */
-	while (i < n1)
-	{
-		arr[k] = L[i];
-		i++;
-		k++;
-	}
-
-	/* Copy the remaining elements of R[], if there
-	are any */
-	while (j < n2)
-	{
-		arr[k] = R[j];
-		j++;
-		k++;
-	}
-}
-
-void parallelSort (keytype *A,int l, int r)
+/*  merges subarrays of T to form A;
+    calls binarySearch
+*/
+void merge( keytype* T, int lower1, int upper1, int lower2, int upper2,
+            keytype* A, int lowerOutput)
 {
-	if (l < r)
-	{
-		int m = l+(r-l)/2;
-		#pragma omp parallel
-		{
-			#pragma omp single
-			{
-				#pragma omp task
-				{
-					parallelSort(A, l, m);
-					parallelSort(A, m+1, r);
-				}
-			}
-			#pragma omp taskwait
-		}
-		merge(A, l, m, r);
-	}
-}
+  int n1 = upper1 - lower1 + 1;
+  int n2 = upper2 - lower2 + 1;
+
+  if(n1 < n2){
+    int myp = lower2;
+    lower2 = lower1;
+    lower1 = myp;
+    int myr = upper2;
+    upper2 = upper1;
+    upper1 = myr;
+    int myn = n2;
+    n2 = n1;
+    n1 = myn;
+  }
+  if (n1 == 0){
+    return;
+    printf("return\n");
+  }
+  else {
+    int mid1 = (lower1 + upper1) / 2;
+    int split2 = binarySearch(T[mid1], T, lower2, upper2);
+    int indx_Divide = lowerOutput + (mid1 - lower1) + (split2 - lower2);
+    A[indx_Divide] = T[mid1];
+    merge(T, lower1, mid1 - 1, lower2, split2 - 1 , A, lowerOutput);
+    merge(T, mid1 + 1, upper1, split2, upper2, A, indx_Divide + 1);
+  }
+}//merge
+
+/*  recursively orders A; calls merge
+*/
+void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
+{
+  int n = end - start + 1;
+  int mid = 0;
+  int notQ = 0;
+
+  if(n == 1)
+    B[startOutput] = A[start];
+  else {
+    keytype* T = newKeys(n);
+    mid = (start + end) / 2;
+    notQ = mid - start + 1;
+    parallelSort(A, start, mid, T, 1);
+    parallelSort(A, mid + 1, end, T, notQ + 1);
+    merge(T, 1, notQ, notQ + 1, n, B, startOutput);
+  }
+}//parallelSort
 
 /* eof */
