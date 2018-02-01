@@ -60,19 +60,16 @@ void merge( keytype* T, int lower1, int upper1, int lower2, int upper2,
     int split2 = binarySearch(T[mid1], T, lower2, upper2);
     int indx_Divide = lowerOutput + (mid1 - lower1) + (split2 - lower2);
     A[indx_Divide] = T[mid1];
-		//#pragma omp parallel
-		//{		
-		#pragma omp num_threads(3)
-		//{
-		//#pragma omp single nowait
+		#pragma omp parallel num_threads(3)
 		{
-	//	#pragma omp task
-	//	{
+		//#pragma omp single nowait
+		//{
+		#pragma omp task		
+		{
     merge(T, lower1, mid1 - 1, lower2, split2 - 1 , A, lowerOutput);
-    merge(T, mid1 + 1, upper1, split2, upper2, A, indx_Divide + 1);
-	//	}
-		//#pragma omp taskwait  
+		merge(T, mid1 + 1, upper1, split2, upper2, A, indx_Divide + 1);		
 		}
+		//#pragma omp taskwait
 	//	}
 		}
 	}
@@ -92,19 +89,24 @@ void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
     keytype* T = newKeys(n);
     mid = (start + end) / 2;
     notQ = mid - start + 1;
-		//#pragma omp task
-		//{
+	
+	//	#pragma omp parallel	
+	//	{
+	//	#pragma omp task
+	//	{
     parallelSort(A, start, mid, T, 1);
     parallelSort(A, mid + 1, end, T, notQ + 1);
+		//}		
+	//	#pragma omp taskwait    
+	//	}
+//		#pragma omp parallel
+//		{		
+	//	#pragma omp single nowait
+	//	{
+		merge(T, 1, notQ, notQ + 1, n, B, startOutput);  
 		//}
-		//#pragma omp taskwait
-		//#pragma omp parallel
-		//{
-		//#pragma omp single nowait
-		//{
-    merge(T, 1, notQ, notQ + 1, n, B, startOutput);  
-		//}
-		//}
+	//	}
+
 	}
 }//parallelSort
 
