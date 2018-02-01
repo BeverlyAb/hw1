@@ -62,7 +62,7 @@ void merge( keytype* T, int lower1, int upper1, int lower2, int upper2,
     A[indx_Divide] = T[mid1];
 		//#pragma omp parallel
 		//{		
-		#pragma omp num_threads(3)
+		#pragma omp num_threads(4)
 		//{
 		//#pragma omp single nowait
 		{
