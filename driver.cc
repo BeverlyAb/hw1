@@ -64,13 +64,10 @@ main (int argc, char* argv[])
   /* Sort in parallel, calling YOUR routine. */
   keytype* A_par = newCopy (N, A_in);
   stopwatch_start (timer);
-  //#pragma omp num_threads(2)
-	//{
 		//#pragma omp parallel
 		//{
 		parallelSort(A_in, 0, N - 1, A_par, 0);
-		//}  
-//	}
+		//}  s
 	long double t_qs = stopwatch_stop (timer);
   printf ("Parallel sort: %Lg seconds ==> %Lg million keys per second\n",
 	  t_qs, 1e-6 * N / t_qs);

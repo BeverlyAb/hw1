@@ -1,0 +1,52 @@
+Script began: Wed Jan 31 22:32:07 PST 2018
+Node: compute-13-6.local
+Current directory: /data/users/babadine/HPC_224/hw/myMerge/hw1
+
+=== Running 5 trials of Mergesort on 10 million elements ... ===
+*** Trial 1 ***
+Timer: gettimeofday
+Timer resolution: ~ 1 us (?)
+
+N == 10000000
+
+Sequential: 2.0822 seconds ==> 4.8026 million keys per second
+	(Array is sorted.)
+Parallel sort: 0.947384 seconds ==> 10.5554 million keys per second
+*** Trial 2 ***
+Timer: gettimeofday
+Timer resolution: ~ 1 us (?)
+
+N == 10000000
+
+Sequential: 2.07364 seconds ==> 4.82244 million keys per second
+	(Array is sorted.)
+Parallel sort: 0.949956 seconds ==> 10.5268 million keys per second
+*** Trial 3 ***
+Timer: gettimeofday
+Timer resolution: ~ 1 us (?)
+
+N == 10000000
+
+Sequential: 2.07343 seconds ==> 4.82292 million keys per second
+	(Array is sorted.)
+Parallel sort: 0.959208 seconds ==> 10.4253 million keys per second
+*** Trial 4 ***
+Timer: gettimeofday
+Timer resolution: ~ 1 us (?)
+
+N == 10000000
+
+Sequential: 2.07372 seconds ==> 4.82225 million keys per second
+	(Array is sorted.)
+Parallel sort: 0.95125 seconds ==> 10.5125 million keys per second
+*** Trial 5 ***
+Timer: gettimeofday
+Timer resolution: ~ 1 us (?)
+
+N == 10000000
+
+Sequential: 2.07276 seconds ==> 4.82448 million keys per second
+	(Array is sorted.)
+Parallel sort: 0.948738 seconds ==> 10.5403 million keys per second
+
+=== Done! ===
