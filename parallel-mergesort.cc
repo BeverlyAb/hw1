@@ -9,7 +9,9 @@
 #include <stdlib.h>
 
 #include "sort.hh"
+#include "mySeq.hh"
 
+#define BOUND 10000
 /*  returns start if T is empty or if x <= T[start] or
     returns mid if x > T[mid -1]
 */
@@ -34,7 +36,7 @@ int binarySearch(keytype x, keytype* T, int start, int end)
 /*  merges subarrays of T to form A;
     calls binarySearch
 */
-void merge( keytype* T, int lower1, int upper1, int lower2, int upper2,
+void pMerge( keytype* T, int lower1, int upper1, int lower2, int upper2,
             keytype* A, int lowerOutput)
 {
   int n1 = upper1 - lower1 + 1;
@@ -60,29 +62,25 @@ void merge( keytype* T, int lower1, int upper1, int lower2, int upper2,
     int split2 = binarySearch(T[mid1], T, lower2, upper2);
     int indx_Divide = lowerOutput + (mid1 - lower1) + (split2 - lower2);
     A[indx_Divide] = T[mid1];
-		#pragma omp parallel num_threads(3)
-		{
-		//#pragma omp single nowait
-		//{
-		#pragma omp task		
-		{
-    merge(T, lower1, mid1 - 1, lower2, split2 - 1 , A, lowerOutput);
-		merge(T, mid1 + 1, upper1, split2, upper2, A, indx_Divide + 1);		
-		}
-		//#pragma omp taskwait
-	//	}
-		}
-	}
-}//merge
+    pMerge(T, lower1, mid1 - 1, lower2, split2 - 1 , A, lowerOutput);
+		pMerge(T, mid1 + 1, upper1, split2, upper2, A, indx_Divide + 1);		
 
-/*  recursively orders A; calls merge
+/*	#pragma omp parallel num_threads(1)
+	{
+		printf("Hi\n");
+		// For single thread! parallel sort spits into: (n : threads)
+	}	//3: 5, 4: 8, 10 : 34  => 2^(exclusive-ceil(n /2) ) = depth of Div. Work
+*/	}
+}//pMerge
+
+/*  recursively sorts A and outputs an ordered B; calls pMerge
 */
 void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
 {
   int n = end - start + 1;
   int mid = 0;
   int notQ = 0;
-
+/*
   if(n == 1)
     B[startOutput] = A[start];
   else {
@@ -90,24 +88,13 @@ void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
     mid = (start + end) / 2;
     notQ = mid - start + 1;
 	
-	//	#pragma omp parallel	
-	//	{
-	//	#pragma omp task
-	//	{
-    parallelSort(A, start, mid, T, 1);
-    parallelSort(A, mid + 1, end, T, notQ + 1);
-		//}		
-	//	#pragma omp taskwait    
-	//	}
-//		#pragma omp parallel
-//		{		
-	//	#pragma omp single nowait
-	//	{
-		merge(T, 1, notQ, notQ + 1, n, B, startOutput);  
-		//}
-	//	}
-
-	}
+	  parallelSort(A, start, mid, T, 1);
+	  parallelSort(A, mid + 1, end, T, notQ + 1);
+		pMerge(T, 1, notQ, notQ + 1, n, B, startOutput); 
+	} */
+	seqSort(A, start, end);
+	B = A;
+	
 }//parallelSort
 
 /* eof */

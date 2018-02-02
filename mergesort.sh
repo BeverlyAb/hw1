@@ -17,7 +17,7 @@ echo ""
 echo "=== Running 5 trials of Mergesort on 10 million elements ... ==="
 for trial in 1 2 3 4 5 ; do
   echo "*** Trial ${trial} ***"
-  ./mergesort-omp 10000000
+  ./mergesort-omp  100 #10000000
 done
 
 echo ""

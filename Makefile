@@ -14,7 +14,7 @@ default:
 	@echo "=================================================="
 
 # Mergesort driver using OpenMP
-mergesort-omp: driver.o sort.o parallel-mergesort.o
+mergesort-omp: driver.o sort.o parallel-mergesort.o sequential-mergesort.o
 	$(CC) $(COPTFLAGS) -o $@ $^
 
 %.o: %.cc
