@@ -64,8 +64,8 @@ void sMerge(keytype* arr, int l, int m, int r)
 		j++;
 		k++;
 	}
-	//free(L);
-	//free(R);
+	free(L);
+	free(R);
 }
 
 void seqSort (keytype *A,int l, int r)

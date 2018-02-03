@@ -1,4 +1,4 @@
-CC = g++ -fopenmp
+CC = g++ -fopenmp #HPC #gcc-7 -fopenmp -lc++ #(MAC)
 CFLAGS =
 COPTFLAGS = -O3 -g
 LDFLAGS =
