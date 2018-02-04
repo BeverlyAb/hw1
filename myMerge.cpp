@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
+#include <algorithm>
+#include <iostream>
+using namespace std;
+
 #define SIZE 100
 typedef unsigned long keytype;
 
@@ -27,6 +31,7 @@ newCopy (int N, const keytype* A)
 /*  returns start if T is empty or if x <= T[start] or
     returns mid if x > T[mid -1]
 */
+/*
 int binarySearch(keytype x, keytype* T, int start, int end)
 {
   int low = start;
@@ -44,10 +49,11 @@ int binarySearch(keytype x, keytype* T, int start, int end)
   }
   return high;
 }//binarySearch
-
+*/
 /*  merges subarrays of T to form A;
     calls binarySearch
 */
+/*
 void merge( keytype* T, int lower1, int upper1, int lower2, int upper2,
             keytype* A, int lowerOutput)
 {
@@ -78,9 +84,9 @@ void merge( keytype* T, int lower1, int upper1, int lower2, int upper2,
     merge(T, mid1 + 1, upper1, split2, upper2, A, indx_Divide + 1);
   }
 }//merge
-
-/*  recursively orders A; calls merge
 */
+/*  recursively orders A; calls merge
+*//*
 void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
 {
   int n = end - start + 1;
@@ -99,7 +105,7 @@ void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
   }
   A = B;
 }//parallelSort
-
+*/
 void assertIsSorted (int N, const keytype* A)
 {
   for (int i = 1; i < N; ++i) {
@@ -123,6 +129,68 @@ void assertIsEqual (int N, const keytype* A, const keytype* B)
   } /* i */
   printf ("\t(Arrays are equal.)\n");
 }
+//---------------------------------------------
+int binarySearch(keytype x, keytype* T, int start, int end)
+{
+  int low = start;
+  int high = max(low, end + 1);
+
+  while(low < high){
+    int mid = (low + high) / 2;
+    if(x <= T[mid])
+      high = mid;
+    else
+      low = mid + 1;
+  }
+  return high;
+}//binarySearch
+
+/*  merges subarrays of T to form A;
+    calls binarySearch
+*/
+void merge( keytype* T, int lower1, int upper1, int lower2, int upper2,
+            keytype* A, int lowerOutput)
+{
+  int n1 = upper1 - lower1 + 1;
+  int n2 = upper2 - lower2 + 1;
+
+  if(n1 < n2){
+    swap(n1, n2);
+    swap(lower1, lower2);
+    swap(upper1, upper2);
+  }
+  if (n1 == 0){
+    //return
+  }
+  else {
+    int mid1 = (lower1 + upper1) / 2;
+    int split2 = binarySearch(T[mid1], T, lower2, upper2);
+    int indx_Divide = lowerOutput + (mid1 - lower1) + (split2 - lower2);
+    A[indx_Divide] = T[mid1];
+    merge(T, lower1, mid1 - 1, lower2, split2 - 1 , A, lowerOutput);
+    merge(T, mid1 + 1, upper1, split2, upper2, A, indx_Divide + 1);
+  }
+}//merge
+
+void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
+{
+  int n = end - start + 1;
+
+  if(n == 1)
+    B[startOutput] = A[start];
+  else {
+    int mid = (start + end) / 2;
+    int notQ = mid - start + 1;
+    parallelSort(A, start, mid, B, startOutput);
+    parallelSort(A, mid + 1, end, B, notQ + 1);
+    merge(A, 0, notQ - 1, notQ, n - 1, B, 0);
+  }
+}
+//---------------------------------------------
+
+
+
+
 
 int main()
 {
