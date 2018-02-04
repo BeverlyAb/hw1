@@ -63,7 +63,8 @@ void pMerge( keytype* T, int lower1, int upper1, int lower2, int upper2,
     int indx_Divide = lowerOutput + (mid1 - lower1) + (split2 - lower2);
     A[indx_Divide] = T[mid1];
     pMerge(T, lower1, mid1 - 1, lower2, split2 - 1 , A, lowerOutput);
-		pMerge(T, mid1 + 1, upper1, split2, upper2, A, indx_Divide + 1);		
+		pMerge(T, mid1 + 1, upper1, split2, upper2, A, indx_Divide + 1);
+  }
 }//pMerge
 
 /*  recursively sorts A and outputs an ordered B; calls pMerge
@@ -76,16 +77,16 @@ void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
 
   if(n == 1)
     B[startOutput] = A[start];
-  else if {
+  else {
     keytype* T = newKeys(n);
     mid = (start + end) / 2;
     notQ = mid - start + 1;
-	
+
 	  parallelSort(A, start, mid, T, 1);
 	  parallelSort(A, mid + 1, end, T, notQ + 1);
-		pMerge(T, 1, notQ, notQ + 1, n, B, startOutput); 
+		pMerge(T, 1, notQ, notQ + 1, n, B, startOutput);
 	}
-	
+
 }//parallelSort
 
 
@@ -96,5 +97,5 @@ void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
 		printf("Hi\n");
 		// For single thread! parallel sort spits into: (n : threads)
 	}	//3: 5, 4: 8, 10 : 34  => 2^(exclusive-ceil(n /2) ) = depth of Div. Work
-*/	}
+*/	
 /* eof */
