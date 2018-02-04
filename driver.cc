@@ -17,7 +17,7 @@
  *  - outputs the execution times and effective sorting rate (i.e.,
  *    keys per second).
  */
-
+#include <omp.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
