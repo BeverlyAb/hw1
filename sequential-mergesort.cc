@@ -1,7 +1,7 @@
 /**
  *  \file sequential-mergesort.cc
  *
- *  \brief Implement your parallel sMergesort in this file.
+ *  seqSort in this file. (mergesort rather than example quicksort)
  */
 
 #include <assert.h>
@@ -64,14 +64,15 @@ void sMerge(keytype* arr, int l, int m, int r)
 		j++;
 		k++;
 	}
-	free(L);
-	free(R);
+//	free(L);
+//	free(R);
 }
 
 void seqSort (keytype *A,int l, int r)
 {
 	if (l < r)
 	{
+		//omp_set_num_threads(THREADS);
 		// Same as (l+r)/2, but avoids overflow for
 		// large l and h
 		int m = l+(r-l)/2;

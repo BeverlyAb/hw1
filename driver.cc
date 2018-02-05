@@ -48,7 +48,7 @@ main (int argc, char* argv[])
   /* Create an input array of length N, initialized to random values */
   keytype* A_in = newKeys (N);
   for (int i = 0; i < N; ++i)
-    A_in[i] = lrand48 ()%10;
+    A_in[i] = lrand48 ();
 
   printf ("\nN == %d\n\n", N);
 
@@ -64,8 +64,9 @@ main (int argc, char* argv[])
   /* Sort in parallel, calling YOUR routine. */
   keytype* A_par = newCopy (N, A_in);
   stopwatch_start (timer);
-	parallelSort(A_in, 0, N, A_par, 0);
-	long double t_qs = stopwatch_stop (timer);
+	parallelSort(A_in, 0, N - 1, A_par, 0);
+
+  long double t_qs = stopwatch_stop (timer);
   printf ("Parallel sort: %Lg seconds ==> %Lg million keys per second\n",
 	  t_qs, 1e-6 * N / t_qs);
 

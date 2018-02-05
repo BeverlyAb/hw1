@@ -40,6 +40,16 @@ void assertIsSorted (int N, const keytype* A);
  */
 void assertIsEqual (int N, const keytype* A, const keytype* B);
 
+/**
+ *  Merges subarrays by simple comparison
+ */
+void sMerge(keytype* arr, int l, int m, int r);
+
+/**
+ *  mergesort - code laid out, rather than STL 
+ */
+void seqSort (keytype *A,int l, int r);
+
 #endif
 
 /* eof */

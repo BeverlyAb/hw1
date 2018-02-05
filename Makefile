@@ -1,5 +1,5 @@
 CC = g++-7 -fopenmp -lc++  #(MAC)
-#CC = gcc -fopenmp #HPC
+#CC = g++ -fopenmp #HPC
 CFLAGS =
 COPTFLAGS = -O3 -g
 LDFLAGS =
@@ -31,7 +31,7 @@ run:
 	make clean
 	make mergesort-omp
 	#qsub ./mergesort.sh
-	./mergesort-omp 10
+	./mergesort-omp 1000000
 show:
 	cat mergesort.o*
 # eof
