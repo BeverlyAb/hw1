@@ -7,24 +7,23 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <algorithm>
 #include "sort.hh"
 #include "mySeq.hh"
 
-#define BOUND 10000
+using namespace std;
+
+#define BOUND 9
 /*  returns start if T is empty or if x <= T[start] or
     returns mid if x > T[mid -1]
 */
 int binarySearch(keytype x, keytype* T, int start, int end)
 {
   int low = start;
-  int high = start;
-  if(start < end + 1)
-    high = end + 1;
+  int high = max(start, end + 1);
 
-  int mid = 0;
   while(low < high){
-    mid = (low + high) / 2;
+    int mid = (low + high) / 2;
     if(x <= T[mid])
       high = mid;
     else
@@ -43,50 +42,69 @@ void pMerge( keytype* T, int lower1, int upper1, int lower2, int upper2,
   int n2 = upper2 - lower2 + 1;
 
   if(n1 < n2){
-    int myp = lower2;
-    lower2 = lower1;
-    lower1 = myp;
-    int myr = upper2;
-    upper2 = upper1;
-    upper1 = myr;
-    int myn = n2;
-    n2 = n1;
-    n1 = myn;
+    swap(lower1, lower2);
+    swap(upper1, upper2);
+    swap(n1,n2);
   }
-  if (n1 == 0){
+  if (n1 == 0)
     return;
-    printf("return\n");
-  }
-  else {
+
+  else {//if(n1 >= BOUND){
     int mid1 = (lower1 + upper1) / 2;
     int split2 = binarySearch(T[mid1], T, lower2, upper2);
     int indx_Divide = lowerOutput + (mid1 - lower1) + (split2 - lower2);
     A[indx_Divide] = T[mid1];
+    omp_set_num_threads(1);
+    #pragma omp parallel
+    {
+    #pragma omp task
+    {
     pMerge(T, lower1, mid1 - 1, lower2, split2 - 1 , A, lowerOutput);
 		pMerge(T, mid1 + 1, upper1, split2, upper2, A, indx_Divide + 1);
+    }
+    }
   }
+  /*else if (n1 > 1 && n1 < BOUND){
+    int mid1 = (lower1 + upper1) / 2;
+    sMerge(T, 0, mid1, n1 + n2);
+    A = T;
+  }*/
 }//pMerge
 
 /*  recursively sorts A and outputs an ordered B; calls pMerge
 */
-void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
+void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput, keytype* T)
 {
   int n = end - start + 1;
-  int mid = 0;
-  int notQ = 0;
 
   if(n == 1)
     B[startOutput] = A[start];
-  else {
-    keytype* T = newKeys(n);
-    mid = (start + end) / 2;
-    notQ = mid - start + 1;
+  else {//if (n >= BOUND){
+    int mid = (start + end) / 2;
+    int notQ = mid - start + 1;
 
-	  parallelSort(A, start, mid, T, 1);
-	  parallelSort(A, mid + 1, end, T, notQ + 1);
-		pMerge(T, 1, notQ, notQ + 1, n, B, startOutput);
+  /*  for (int  i = 0; i < n; i++) {
+      printf("A[%i] %i\n", i, A[i]);
+    }
+*/  omp_set_num_threads(1);
+    #pragma omp parallel
+    {
+    #pragma omp task
+    {
+ 	  parallelSort(A, start, mid, T, 1, T);
+	  parallelSort(A, mid + 1, end, T, notQ + 1, T);
+    }
+    #pragma omp taskwait
+    }
+
+		pMerge(T, 1, notQ, notQ + 1, n , B, startOutput);
 	}
-
+  for (int  i = 0; i < n; i++)
+    printf("B[%i] %i\n", i, B[i]);
+/*  else if (n > 1 && n < BOUND){
+    seqSort (A, start, end);
+  //  A = B;
+} */
 }//parallelSort
 
 
@@ -97,5 +115,5 @@ void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
 		printf("Hi\n");
 		// For single thread! parallel sort spits into: (n : threads)
 	}	//3: 5, 4: 8, 10 : 34  => 2^(exclusive-ceil(n /2) ) = depth of Div. Work
-*/	
+*/
 /* eof */

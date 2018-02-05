@@ -31,7 +31,7 @@ run:
 	make clean
 	make mergesort-omp
 	#qsub ./mergesort.sh
-	./mergesort-omp 1000000
+	./mergesort-omp 10
 show:
 	cat mergesort.o*
 # eof
