@@ -30,8 +30,8 @@ cleanA:
 run:
 	make clean
 	make mergesort-omp
-	#qsub ./mergesort.sh
-	./mergesort-omp 1000000
+	qsub ./mergesort.sh
+	#./mergesort-omp 1000000
 show:
 	cat mergesort.o*
 # eof

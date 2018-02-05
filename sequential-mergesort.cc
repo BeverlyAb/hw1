@@ -1,7 +1,8 @@
 /**
  *  \file sequential-mergesort.cc
  *
- *  seqSort in this file. (mergesort rather than example quicksort)
+ *  seqSort in this file. code source:https://www.geeksforgeeks.org/merge-sort/
+  	Laid out version of the code. Used as reference
  */
 
 #include <assert.h>
