@@ -49,18 +49,22 @@ void pMerge( keytype* T, int lower1, int upper1, int lower2, int upper2,
   if (n1 == 0)
     return;
 
-  else {//if(n1 >= BOUND){
+  else if(n1 >= BOUND){
     int mid1 = (lower1 + upper1) / 2;
     int split2 = binarySearch(T[mid1], T, lower2, upper2);
     int indx_Divide = lowerOutput + (mid1 - lower1) + (split2 - lower2);
     A[indx_Divide] = T[mid1];
-    omp_set_num_threads(1);
+    omp_set_num_threads(8);
     #pragma omp parallel
+    {
+    #pragma omp single nowait
     {
     #pragma omp task
     {
     pMerge(T, lower1, mid1 - 1, lower2, split2 - 1 , A, lowerOutput);
 		pMerge(T, mid1 + 1, upper1, split2, upper2, A, indx_Divide + 1);
+    }
+    #pragma omp taskwait
     }
     }
   }
@@ -87,8 +91,10 @@ void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
   /*  for (int  i = 0; i < n; i++) {
       printf("A[%i] %i\n", i, A[i]);
     }
-*/  omp_set_num_threads(1);
+*/  omp_set_num_threads(8);
     #pragma omp parallel
+    {
+    #pragma omp single nowait
     {
     #pragma omp task
     {
@@ -96,6 +102,7 @@ void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
 	  parallelSort(A, mid, end, T, notQ);
     }
     #pragma omp taskwait
+    }
     }
 
 		pMerge(T, 0, notQ - 1, notQ, n , B, startOutput);
