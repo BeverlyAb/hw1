@@ -54,7 +54,7 @@ void pMerge( keytype* T, int lower1, int upper1, int lower2, int upper2,
     int split2 = binarySearch(T[mid1], T, lower2, upper2);
     int indx_Divide = lowerOutput + (mid1 - lower1) + (split2 - lower2);
     A[indx_Divide] = T[mid1];
-    omp_set_num_threads(2);
+    omp_set_num_threads(1);
     #pragma omp parallel
     {
     #pragma omp task
@@ -75,14 +75,14 @@ void pMerge( keytype* T, int lower1, int upper1, int lower2, int upper2,
 */
 void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
 {
-  int n = end - start + 1;
+  int n = end - start;
 
   if(n == 1)
     B[startOutput] = A[start];
   else {//if (n >= BOUND){
     keytype* T = newKeys(n);
     int mid = (start + end) / 2;
-    int notQ = mid - start + 1;
+    int notQ = mid - start;
 
   /*  for (int  i = 0; i < n; i++) {
       printf("A[%i] %i\n", i, A[i]);
@@ -92,16 +92,16 @@ void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
     {
     #pragma omp task
     {
- 	  parallelSort(A, start, mid, T, 1);
-	  parallelSort(A, mid + 1, end, T, notQ + 1);
+ 	  parallelSort(A, start, mid, T, 0);
+	  parallelSort(A, mid, end, T, notQ);
     }
     #pragma omp taskwait
     }
 
-		pMerge(T, 1, notQ, notQ + 1, n , B, startOutput);
+		pMerge(T, 0, notQ - 1, notQ, n , B, startOutput);
 	}
-  for (int  i = 0; i < n; i++)
-    printf("B[%i] %i\n", i, B[i]);
+ // for (int  i = 0; i < n; i++)
+ //   printf("B[%i] %i\n", i, B[i]);
 /*  else if (n > 1 && n < BOUND){
     seqSort (A, start, end);
   //  A = B;
