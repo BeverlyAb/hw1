@@ -13,7 +13,8 @@
 
 using namespace std;
 
-#define BOUND 9
+#define BOUND 1
+#define THREADS 2
 /*  returns start if T is empty or if x <= T[start] or
     returns mid if x > T[mid -1]
 */
@@ -54,25 +55,25 @@ void pMerge( keytype* T, int lower1, int upper1, int lower2, int upper2,
     int split2 = binarySearch(T[mid1], T, lower2, upper2);
     int indx_Divide = lowerOutput + (mid1 - lower1) + (split2 - lower2);
     A[indx_Divide] = T[mid1];
-    omp_set_num_threads(8);
+    omp_set_num_threads(THREADS);
     #pragma omp parallel
-    {
-    #pragma omp single nowait
-    {
-    #pragma omp task
-    {
-    pMerge(T, lower1, mid1 - 1, lower2, split2 - 1 , A, lowerOutput);
-		pMerge(T, mid1 + 1, upper1, split2, upper2, A, indx_Divide + 1);
+      {
+        #pragma omp single nowait
+        {
+          #pragma omp task
+          {
+            pMerge(T, lower1, mid1 - 1, lower2, split2 - 1 , A, lowerOutput);
+            pMerge(T, mid1 + 1, upper1, split2, upper2, A, indx_Divide + 1);
+          }
+          #pragma omp taskwait
+        }
+      }
     }
-    #pragma omp taskwait
-    }
-    }
-  }
-  /*else if (n1 > 1 && n1 < BOUND){
+  else {//if (n1 > 1 && n1 < BOUND){
     int mid1 = (lower1 + upper1) / 2;
-    sMerge(T, 0, mid1, n1 + n2);
+    sMerge(T, lower1, mid1, n1 + n2);
     A = T;
-  }*/
+  }
 }//pMerge
 
 /*  recursively sorts A and outputs an ordered B; calls pMerge
@@ -83,7 +84,7 @@ void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
 
   if(n == 1)
     B[startOutput] = A[start];
-  else {//if (n >= BOUND){
+  else if (n >= BOUND){
     keytype* T = newKeys(n);
     int mid = (start + end) / 2;
     int notQ = mid - start;
@@ -91,37 +92,28 @@ void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
   /*  for (int  i = 0; i < n; i++) {
       printf("A[%i] %i\n", i, A[i]);
     }
-*/  omp_set_num_threads(8);
+*/  omp_set_num_threads(THREADS);
     #pragma omp parallel
     {
-    #pragma omp single nowait
-    {
-    #pragma omp task
-    {
- 	  parallelSort(A, start, mid, T, 0);
-	  parallelSort(A, mid, end, T, notQ);
+      #pragma omp single nowait
+      {
+        #pragma omp task
+        {
+ 	        parallelSort(A, start, mid, T, 0);
+	         parallelSort(A, mid, end, T, notQ);
+         }
+        #pragma omp taskwait
+      }
     }
-    #pragma omp taskwait
-    }
-    }
-
 		pMerge(T, 0, notQ - 1, notQ, n , B, startOutput);
 	}
  // for (int  i = 0; i < n; i++)
  //   printf("B[%i] %i\n", i, B[i]);
-/*  else if (n > 1 && n < BOUND){
+/* else {//{if (n > 1 && n < BOUND){
     seqSort (A, start, end);
-  //  A = B;
-} */
+    //A = B;
+  } */
 }//parallelSort
 
 
-//------------------------------------------------------------------------------
-
-/*	#pragma omp parallel num_threads(1)
-	{
-		printf("Hi\n");
-		// For single thread! parallel sort spits into: (n : threads)
-	}	//3: 5, 4: 8, 10 : 34  => 2^(exclusive-ceil(n /2) ) = depth of Div. Work
-*/
 /* eof */
