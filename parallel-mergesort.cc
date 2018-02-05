@@ -54,7 +54,7 @@ void pMerge( keytype* T, int lower1, int upper1, int lower2, int upper2,
     int split2 = binarySearch(T[mid1], T, lower2, upper2);
     int indx_Divide = lowerOutput + (mid1 - lower1) + (split2 - lower2);
     A[indx_Divide] = T[mid1];
-    omp_set_num_threads(1);
+    omp_set_num_threads(2);
     #pragma omp parallel
     {
     #pragma omp task
@@ -73,13 +73,14 @@ void pMerge( keytype* T, int lower1, int upper1, int lower2, int upper2,
 
 /*  recursively sorts A and outputs an ordered B; calls pMerge
 */
-void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput, keytype* T)
+void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput)
 {
   int n = end - start + 1;
 
   if(n == 1)
     B[startOutput] = A[start];
   else {//if (n >= BOUND){
+    keytype* T = newKeys(n);
     int mid = (start + end) / 2;
     int notQ = mid - start + 1;
 
@@ -91,8 +92,8 @@ void parallelSort(keytype* A, int start, int end, keytype* B, int startOutput, k
     {
     #pragma omp task
     {
- 	  parallelSort(A, start, mid, T, 1, T);
-	  parallelSort(A, mid + 1, end, T, notQ + 1, T);
+ 	  parallelSort(A, start, mid, T, 1);
+	  parallelSort(A, mid + 1, end, T, notQ + 1);
     }
     #pragma omp taskwait
     }
